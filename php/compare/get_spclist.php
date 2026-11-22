@@ -1,0 +1,1 @@
+../browser/get_spclist.php

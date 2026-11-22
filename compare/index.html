@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+
+<?php
+  session_start();
+  echo "<script> var session_id = \"" . session_id() . "\"; </script>";
+?>
+
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <title>IMDA</title>
+  <script type="text/javascript" src="../js/thirdparty/jquery-3.3.1.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-ka7Sk0Gln4gmtz2MlQnikT1wXgYsOg+OMhuP+IlRH9sENBO0LRn5q+8nbTov4+1p" crossorigin="anonymous"></script>
+  <script src="https://d3js.org/d3.v7.min.js"></script>
+
+  <link href="../css/main.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3" crossorigin="anonymous">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Oswald&display=swap" rel="stylesheet">
+
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+</head>
+
+<style>
+  html,
+  body {
+    height: 100%;
+  }
+
+  .dir {
+    line-height: 100px;
+    vertical-align: middle;
+  }
+
+  .hidden {
+    display: none !important;
+  }
+
+  .tab {
+    padding-left: 20px;
+  }
+
+  .collapsed:hover {
+    background-color: #e7f1ff;
+  }
+</style>
+
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-0">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNavAltMarkup" aria-controls="navbarNavAltMarkup" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="nav-link active link-light" aria-current="page" href="../index.html"> <b> IMDA </b> </a>
+      <div class="d-flex px-3 flex-row-reverse">
+        <div> <a class="nav-link active mx-3 link-light" aria-current="page" href="../documentation.html">Documentation</a> </div>
+        <div> <a class="nav-link active mx-3 link-light" aria-current="page" href="../compare/index.html">Compare genomes</a> </div>
+        <div> <a class="nav-link active mx-3 link-light" aria-current="page" href="../browser/index.html">Browse results</a> </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container my-5">
+    <h5 class="m-0" style="font-family: 'Oswald', sans-serif;">Compare genomes</h5>
+    <div class="my-4 mx-0 row" style="height:500px">
+      <div class="col p-4 border" id="ref_div" style="overflow-y: auto; height: 100%">
+        <h6> <b> Reference genome </b> </h6>
+        <p class="m-0" style="font-size: 0.875rem; color: #6c757d"> * Choose only one genome </p>
+        <div class="py-2">
+          <input class="form-control form-control-sm search" id="search_ref" type="text" aria-label=".form-control-sm example" placeholder="Search">
+          <ul class="dropdown-menu" id="search_ref_result" style="font-size: 0.775rem">
+          </ul>
+        </div>
+        <div class="ref_canvas" style="height: 100%">
+          <div class="my-2" style="float: right">
+            <button type="button" id="ref-uncheck" class="btn btn-outline-secondary btn-sm">Unselect all</button>
+            <button type="button" id="ref-expand" class="btn btn-outline-secondary btn-sm">Expand all</button>
+            <button type="button" id="ref-collapse" class="btn btn-outline-secondary btn-sm">Collapse all</button>
+          </div>
+          <div id="ref_select"></div>
+          <div class="ref_root_children_body"></div>
+          <div class="d-flex justify-content-center load_spc" style="height: 80%">
+            <div class="spinner-border text-primary" role="status" style="margin: auto">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="col-1 d-flex align-content-center flex-wrap justify-content-center" style="width:70px;">
+        <div>
+          <span class="material-icons dir" style="font-size: 2rem">
+            sync_alt
+          </span>
+        </div>
+      </div>
+      <div class="col p-4 border" id="comp_div" style="overflow-y: auto; height: 100%">
+        <h6> <b> Target genome </b> </h6>
+        <p class="m-0" style="font-size: 0.875rem; color: #6c757d"> * Choose one or multiple genomes </p>
+        <div class="py-2">
+          <input class="form-control form-control-sm search" id="search_comp" type="text" aria-label=".form-control-sm example" placeholder="Search">
+          <ul class="dropdown-menu" id="search_comp_result" style="font-size: 0.775rem">
+          </ul>
+        </div>
+        <div class="comp_canvas" style="height: 100%">
+          <div class="my-2" style="float: right">
+            <button type="button" id="comp-uncheck" class="btn btn-outline-secondary btn-sm">Unselect all</button>
+            <button type="button" id="comp-expand" class="btn btn-outline-secondary btn-sm">Expand all</button>
+            <button type="button" id="comp-collapse" class="btn btn-outline-secondary btn-sm">Collapse all</button>
+          </div>
+          <div id="comp_select"></div>
+          <div class="comp_root_children_body"></div>
+          <div class="d-flex justify-content-center load_spc" style="height: 80%">
+            <div class="spinner-border text-primary" role="status" style="margin: auto">
+              <span class="visually-hidden">Loading...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p class="m-1 p-0" style="font-size: 0.85rem; color: #6c757d"><b> * If you have specific genome you'd like to analyze, feel free to contact us via email.</b> </p>
+    </div>
+
+    <div class="my-3 d-grid gap-2 col-6 mx-auto">
+      <button type="button" id="search" class="mt-1 btn btn-dark btn-sm">Search prebuilt results</button>
+    </div>
+    <div class="text-center" id="search_loading" style="display:none">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+    <hr />
+    <div class="my-3 d-grid gap-2" id="dbsearch_result">
+      <div id="result_find" style="display:none !important">
+        <p>
+        <h6> <b> Analysis results found in a database </b> </h6>
+        </p>
+        <table class="table table-sm table-borderless border-top border-bottom align-middle text-center mb-3" id="result_table"></table>
+      </div>
+      <div id="result_nofind" style="display:none !important">
+        <div class="alert alert-warning" role="alert">
+          <p class="text-center m-0">No Prebuilt result.</p>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <h6> <b> Selected reference genome </b> </h6>
+            <p class="ms-3" id="refgenome"></p>
+          </div>
+          <div class="col">
+            <h6> <b> Selected target genome(s) </b> </h6>
+            <p class="ms-3" id="compgenome"></p>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+            <div class="row">
+              <div class="col-4 col-form-label">
+                <h6>
+                  <p class="mb-0"> <b> Synteny resolution (bp)</b> </p>
+                </h6>
+              </div>
+              <div class="col">
+                <input type="number" class="form-control form-control-sm" id="resol" value=100000 step=1000 min=1000>
+                <div class="invalid-feedback" id="resol-feedback">
+                  Please provide a valid resolution value<br /> (1,000 <= Resolution <=1,000,000). </div>
+                </div>
+              </div>
+            </div>
+            <div class="col">
+              <div class="row">
+                <div class="col-4 col-form-label">
+                  <h6>
+                    <p class="mb-0"> <b> Contact email address (Optional) </b> </p>
+                  </h6>
+                </div>
+                <div class="col">
+                  <input type="email" class="form-control form-control-sm" id="email" placeholder="example@example.com" aria-describedby="emailHelp">
+                  <div id="emailHelp" class="form-text ps-1" style="font-size:0.75rem">We''ll never share your email with anyone else.</div>
+                  <div class="invalid-feedback" id="email-feedback"> Please provide a valid email address.</div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="my-3 d-grid gap-2 col-6 mx-auto">
+            <div id="argument" style="display:none"> </div>
+            <input type="submit" id="submit" value="Submit" class="btn btn-dark btn-sm"></input>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <hr class="m-2" />
+  <footer class="footer">
+    <div class="container mb-2">
+      <div class="row">
+        <div class="col-2"><a href="http://www.jkimlab.org" target="_blank"> <img class="footer-logo" src="../img/bioinfolab_logo_v3.png" width="30px"></a></div>
+        <div class="col">
+          <p class="text-center m-1" style="font-size: 0.875rem"><a href="http://www.jkimlab.org" target="_blank">Intelligent Bioinformatics Computing Laboratory</a>, Konkuk University</p>
+        </div>
+        <div class="col-2 text-right" style="font-size: 0.875rem">
+          <p class="text-center m-1"> Contact <a href="mailto:ibcl.kr@gmail.com" target="_blank"> <span class="material-icons align-middle m-0" style="color:grey; font-size: 1.15rem"> email </span> </a></p>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>
+
+<script type="text/javascript" src="../js/compare/compare_form.js"></script>

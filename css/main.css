@@ -1,0 +1,13 @@
+.highlight{
+  fill: red;
+  font-weight: 900
+}
+
+.highlight_p{
+  stroke-width: 2;
+  stroke: red
+}
+
+.comp_list{
+  text-decoration: underline;
+}
